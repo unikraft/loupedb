@@ -1,0 +1,39 @@
+FROM loupe-base:latest
+
+# Install wrk
+RUN apt install -y wrk
+
+# Nginx related instructions
+RUN apt build-dep -y nginx
+RUN wget https://nginx.org/download/nginx-1.20.1.tar.gz
+RUN tar -xf nginx-1.20.1.tar.gz
+
+# Two copies, one that generates coverage and one that doesn't
+RUN cd nginx-1.20.1 && mkdir logs
+RUN cp -r nginx-1.20.1 nginx-coverage
+RUN mv nginx-1.20.1 nginx
+
+# No coverage
+RUN cd nginx && ./configure \
+        --sbin-path=$(pwd)/nginx \
+        --conf-path=$(pwd)/conf/nginx.conf \
+        --pid-path=$(pwd)/nginx.pid
+RUN cd nginx && make -j
+
+# Generate coverage
+RUN cd nginx-coverage && ./configure \
+        --with-cc-opt="-fprofile-arcs -ftest-coverage" \
+        --with-ld-opt="-lgcov" \
+        --sbin-path=$(pwd)/nginx \
+        --conf-path=$(pwd)/conf/nginx.conf \
+        --pid-path=$(pwd)/nginx.pid
+RUN cd nginx-coverage && make -j
+
+# Copy test script
+COPY dockerfile_data/nginx-test.sh /root/nginx-test.sh
+RUN chmod a+x /root/nginx-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/nginx-test.sh \
+                     -b /root/nginx/objs/nginx \
+                     -- -p /root/nginx -g "daemon off;"

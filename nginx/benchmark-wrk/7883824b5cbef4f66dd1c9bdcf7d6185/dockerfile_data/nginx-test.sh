@@ -2,8 +2,8 @@
 
 # nginx command: ./objs/nginx -p $(pwd) -g 'daemon off;'
 
-WRK_PATH=/root/hle/pub/wrk/wrk
-PORT=8034
+WRK_PATH=wrk
+PORT=80
 
 test_works() {
   bench=$(${WRK_PATH} http://localhost:${PORT}/index.html -d3s)
