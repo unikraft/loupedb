@@ -1,0 +1,37 @@
+FROM loupe-base:latest
+
+RUN apt build-dep -y nginx
+
+# needed to run the test suite
+RUN apt install -y prove6
+
+COPY dockerfile_data/nginx-test.sh /root/nginx-test.sh
+RUN chmod a+x /root/nginx-test.sh
+
+# the test suite cannot be run as root
+# https://forum.nginx.org/read.php?29,291976,293312#msg-293312
+RUN useradd -ms /bin/bash user
+USER user
+RUN mkdir /tmp/nginx
+WORKDIR /tmp/nginx
+
+# Nginx related instructions
+RUN wget https://nginx.org/download/nginx-1.20.1.tar.gz
+RUN tar -xf nginx-1.20.1.tar.gz
+RUN cd nginx-1.20.1 && ./configure \
+        --with-cc-opt="-fprofile-arcs -ftest-coverage" \
+        --with-ld-opt="-lgcov" \
+        --sbin-path=$(pwd)/nginx \
+        --conf-path=$(pwd)/conf/nginx.conf \
+        --pid-path=$(pwd)/nginx.pid
+RUN cd nginx-1.20.1 && make -j && mkdir logs
+# necessary for the test suite
+RUN mv nginx-1.20.1 nginx
+
+# test suite
+RUN git clone https://github.com/nginx/nginx-tests.git
+
+CMD cd /tmp/nginx/nginx-tests && /root/explore.py --output-csv \
+                     --only-consider /tmp/nginx/nginx/objs/nginx \
+                     --timeout 280 --test-sequential -t /root/nginx-test.sh \
+                     --smart-wait-repeat 3 -b /usr/bin/prove -- -j 9 -m .
