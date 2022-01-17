@@ -1,0 +1,27 @@
+FROM loupe-base:latest
+
+# Install redis-benchmark
+RUN apt install -y redis-tools
+
+# Redis related instructions
+RUN apt build-dep -y redis
+RUN wget https://download.redis.io/releases/redis-6.2.6.tar.gz
+RUN tar -xf redis-6.2.6.tar.gz
+
+# Two copies, one that generates coverage and one that doesn't
+RUN cp -r redis-6.2.6 redis-coverage
+RUN mv redis-6.2.6 redis
+
+# No coverage
+RUN cd redis && make -j
+
+# Generate coverage
+RUN cd redis-coverage && make gcov -j
+
+# Copy test script
+COPY dockerfile_data/redis-test.sh /root/redis-test.sh
+RUN chmod a+x /root/redis-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/redis-test.sh \
+                     -b /root/redis/src/redis-server
