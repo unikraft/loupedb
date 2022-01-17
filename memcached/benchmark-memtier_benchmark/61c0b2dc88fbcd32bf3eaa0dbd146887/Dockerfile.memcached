@@ -1,0 +1,31 @@
+FROM loupe-base:latest
+
+# Install memtier_benchmark
+RUN apt install -y build-essential autoconf automake libpcre3-dev \
+                   libevent-dev pkg-config zlib1g-dev libssl-dev
+RUN git clone https://github.com/RedisLabs/memtier_benchmark.git
+RUN cd memtier_benchmark && autoreconf -ivf && ./configure && make && make install
+
+# Memcached related instructions
+RUN apt build-dep -y memcached
+RUN wget https://memcached.org/files/memcached-1.6.13.tar.gz
+RUN tar -xf memcached-1.6.13.tar.gz
+
+# Two copies, one that generates coverage and one that doesn't
+RUN cp -r memcached-1.6.13 memcached-coverage
+RUN mv memcached-1.6.13 memcached
+
+# No coverage
+RUN cd memcached && ./configure && make -j
+
+# Generate coverage
+RUN cd memcached-coverage && \
+    CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-lgcov" ./configure && make -j
+
+# Copy test script
+COPY dockerfile_data/memcached-test.sh /root/memcached-test.sh
+RUN chmod a+x /root/memcached-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/memcached-test.sh \
+                     -b /root/memcached/memcached -- -u root
