@@ -1,0 +1,21 @@
+FROM loupe-base:latest
+
+RUN apt build-dep -y lighttpd
+RUN apt install -y wrk
+
+COPY dockerfile_data/lighttpd-test.sh /root/
+COPY dockerfile_data/lighttpd.conf /root/
+RUN chmod a+x /root/lighttpd-test.sh
+
+# Lighttpd related instructions
+RUN wget https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.63.tar.gz
+RUN tar -xf lighttpd-1.4.63.tar.gz
+# with and without coverage
+RUN cp -r lighttpd-1.4.63 lighttpd-coverage && mv lighttpd-1.4.63 lighttpd
+RUN cd lighttpd && ./configure && make -j install
+RUN cd lighttpd-coverage && \
+    CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-lgcov" ./configure && make -j
+RUN mkdir -p /var/cache/lighttpd/uploads
+
+CMD /root/explore.py --output-csv -t /root/lighttpd-test.sh \
+                     -b /root/lighttpd/src/lighttpd -- -D -f /root/lighttpd.conf
