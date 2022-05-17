@@ -1,0 +1,1 @@
+../../../../loupe/loupe -v generate -b -db ../../../../loupedb -a redis -w redis-benchmark -d ./Dockerfile.redis
