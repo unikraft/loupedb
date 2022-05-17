@@ -7,13 +7,13 @@
 5,N,N,N,N
 6,N,N,N,N
 7,N,N,N,N
-8,Y,Y,N,N
+8,Y,N,N,N
 9,Y,N,N,N
-10,Y,Y,N,N
-11,Y,N,N,Y
-12,Y,N,N,Y
-13,Y,N,N,Y
-14,Y,N,N,Y
+10,Y,N,N,N
+11,Y,N,N,N
+12,Y,N,N,N
+13,Y,N,N,N
+14,Y,N,N,N
 15,N,N,N,N
 16,N,N,N,N
 17,Y,N,N,N
@@ -54,7 +54,7 @@
 52,N,N,N,N
 53,N,N,N,N
 54,Y,N,N,N
-55,Y,N,N,Y
+55,Y,N,N,N
 56,N,N,N,N
 57,N,N,N,N
 58,N,N,N,N
@@ -292,7 +292,7 @@
 290,N,N,N,N
 291,Y,N,N,N
 292,N,N,N,N
-293,Y,N,N,Y
+293,Y,N,N,N
 294,N,N,N,N
 295,N,N,N,N
 296,N,N,N,N
