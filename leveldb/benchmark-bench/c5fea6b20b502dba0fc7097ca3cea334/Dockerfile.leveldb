@@ -1,0 +1,20 @@
+FROM loupe-base:latest
+
+# Redis related instructions
+RUN apt build-dep -y leveldb
+RUN apt install -y cmake
+
+
+RUN git clone  https://github.com/google/leveldb --branch 1.23 --recurse-submodules
+
+RUN cd leveldb/ && mkdir -p build 
+RUN cd leveldb/ && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
+
+# Copy test script
+COPY dockerfile_data/leveldb-test.sh /root/leveldb-test.sh
+RUN chmod a+x /root/leveldb-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv \
+		     -b /root/leveldb/build/db_bench \
+		     --
