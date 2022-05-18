@@ -1,0 +1,29 @@
+
+FROM loupe-base:latest
+
+# Redis related instructions
+RUN apt build-dep -y redis
+
+# Redis related instructions
+RUN wget https://github.com/Snapchat/KeyDB/archive/refs/tags/v6.3.0.tar.gz
+RUN tar -xf v6.3.0.tar.gz
+
+# Two copies, one that generates coverage and one that doesn't
+RUN cp -r KeyDB-6.3.0/ keydb-coverage
+RUN mv KeyDB-6.3.0/ keydb/
+
+RUN apt install -y libuuid1 uuid-dev libcurl4-gnutls-dev
+
+# No coverage
+RUN cd keydb/ && make -j
+
+# Generate coverage
+RUN cd keydb-coverage && make gcov -j
+
+# Copy test script
+COPY dockerfile_data/keydb-test.sh /root/keydb-test.sh
+RUN chmod a+x /root/keydb-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/keydb-test.sh \
+                     -b /root/keydb/src/keydb-server
