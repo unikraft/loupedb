@@ -1,0 +1,19 @@
+FROM loupe-base:latest
+
+# Download and build
+RUN wget https://github.com/bamos/parsec-benchmark/raw/master/pkgs/apps/blackscholes/src/blackscholes.c -O /root/blackscholes.c
+RUN wget https://github.com/ssrg-vt/popcorn-compiler/blob/hermit-master/apps/blackscholes/in_64K.txt?raw=true -O /root/in_64K.txt
+COPY dockerfile_data/blackscholes.patch /root/blackscholes.patch
+RUN patch /root/blackscholes.c /root/blackscholes.patch
+RUN gcc -Wno-format /root/blackscholes.c -o /root/blackscholes -lm
+
+# Copy test script
+COPY dockerfile_data/blackscholes-test.sh /root/blackscholes-test.sh
+RUN chmod a+x /root/blackscholes-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/blackscholes-test.sh \
+		     -b /root/blackscholes \
+			 --test-sequential \
+             --timeout 10 \
+             -- 1 in_64K.txt output-file

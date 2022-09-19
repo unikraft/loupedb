@@ -1,0 +1,11 @@
+--- blackscholes.c	2022-09-19 15:48:05.178520330 +0000
++++ blackscholes-new.c	2022-09-19 15:47:14.893374512 +0000
+@@ -12,6 +12,8 @@
+ #include <math.h>
+ #include <string.h>
+ 
++#define ERR_CHK 1
++
+ #ifdef ENABLE_PARSEC_HOOKS
+ #include <hooks.h>
+ #endif
