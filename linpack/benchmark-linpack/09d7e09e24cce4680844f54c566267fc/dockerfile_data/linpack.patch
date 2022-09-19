@@ -1,0 +1,52 @@
+--- linpack.c	1994-03-12 15:27:19.000000000 +0000
++++ linpack-patched.c	2022-09-17 10:18:19.480230786 +0000
+@@ -64,14 +64,15 @@
+ static void *mempool;
+ 
+ 
+-void main(void)
++int main(void)
+ 
+     {
+     char    buf[80];
+-    int     arsize;
++    int     arsize = 200;
+     long    arsize2d,memreq,nreps;
+     size_t  malloc_arg;
+ 
++#if 0
+     while (1)
+         {
+         printf("Enter array size (q to quit) [200]:  ");
+@@ -82,12 +83,13 @@
+             arsize=200;
+         else
+             arsize=atoi(buf);
++#endif
+         arsize/=2;
+         arsize*=2;
+         if (arsize<10)
+             {
+             printf("Too small.\n");
+-            continue;
++            return -1;
+             }
+         arsize2d = (long)arsize*(long)arsize;
+         memreq=arsize2d*sizeof(REAL)+(long)arsize*sizeof(REAL)+(long)arsize*sizeof(int);
+@@ -96,7 +98,7 @@
+         if (malloc_arg!=memreq || (mempool=malloc(malloc_arg))==NULL)
+             {
+             printf("Not enough memory available for given array size.\n\n");
+-            continue;
++            return -1;
+             }
+         printf("\n\nLINPACK benchmark, %s precision.\n",PREC);
+         printf("Machine precision:  %d digits.\n",BASE10DIG);
+@@ -109,7 +111,9 @@
+             nreps*=2;
+         free(mempool);
+         printf("\n");
++#if 0
+         }
++#endif
+     }

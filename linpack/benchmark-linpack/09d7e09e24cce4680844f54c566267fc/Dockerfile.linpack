@@ -1,0 +1,17 @@
+FROM loupe-base:latest
+
+# Download, patch and build linpack
+RUN wget https://netlib.org/benchmark/linpackc.new -O /root/linpack.c
+COPY dockerfile_data/linpack.patch /root/linpack.patch
+RUN patch /root/linpack.c /root/linpack.patch
+RUN gcc /root/linpack.c -o /root/linpack
+
+# Copy test script
+COPY dockerfile_data/linpack-test.sh /root/linpack-test.sh
+RUN chmod a+x /root/linpack-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/linpack-test.sh \
+		     -b /root/linpack \
+			 --test-sequential \
+             --timeout=60
