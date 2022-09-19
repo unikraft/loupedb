@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+# Download and build
+RUN wget https://netlib.org/benchmark/whetstone.c -O /root/whetstone.c
+RUN gcc /root/whetstone.c -o /root/whetstone -lm
+
+# Copy test script
+COPY dockerfile_data/whetstone-test.sh /root/whetstone-test.sh
+RUN chmod a+x /root/whetstone-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/whetstone-test.sh \
+		     -b /root/whetstone \
+			 --test-sequential \
+             --timeout 60 \
+             -- 500000
