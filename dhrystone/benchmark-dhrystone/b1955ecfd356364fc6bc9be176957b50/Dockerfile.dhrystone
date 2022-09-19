@@ -1,0 +1,19 @@
+FROM loupe-base:latest
+
+ARG CFLAGS="-Wno-implicit-int -Wno-implicit-function-declaration -Wno-pointer-to-int-cast -Wno-builtin-declaration-mismatch"
+
+# Download and build
+RUN wget https://raw.githubusercontent.com/Keith-S-Thompson/dhrystone/master/v2.2/dry.c -O /root/dry.c
+RUN gcc $CFLAGS -c /root/dry.c -o dry1.o
+RUN gcc $CFLAGS -DPASS2 /root/dry.c /root/dry1.o -o /root/dhrystone
+
+# Copy test script
+COPY dockerfile_data/dhrystone-test.sh /root/dhrystone-test.sh
+RUN chmod a+x /root/dhrystone-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/dhrystone-test.sh \
+		     -b /root/dhrystone \
+			 --test-sequential \
+             --timeout=20 \
+             -- 50000000
