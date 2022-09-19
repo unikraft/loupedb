@@ -1,0 +1,21 @@
+FROM loupe-base:latest
+
+# Install gfortran
+RUN apt update
+RUN apt install -y gfortran
+
+# Download and build
+RUN wget  https://www.nas.nasa.gov/assets/npb/NPB3.4.2.tar.gz -O /root/NPB.tar.gz
+RUN cd /root && tar xf NPB.tar.gz
+RUN cp -f /root/NPB3.4.2/NPB3.4-OMP/config/NAS.samples/make.def_gcc /root/NPB3.4.2/NPB3.4-OMP/config/make.def
+RUN cd /root/NPB3.4.2/NPB3.4-OMP/ && make CFLAGS="-Wno-unused-result -Wno-format-security -Wno-format" dc CLASS=S
+
+# Copy test script
+COPY dockerfile_data/npb-test.sh /root/npb-test.sh
+RUN chmod a+x /root/npb-test.sh
+
+# Run command (without coverage)
+CMD OMP_NUM_THREADS=1 /root/explore.py --output-csv -t /root/npb-test.sh \
+		     -b /root/NPB3.4.2/NPB3.4-OMP/bin/dc.S.x\
+			 --test-sequential \
+             --timeout 60

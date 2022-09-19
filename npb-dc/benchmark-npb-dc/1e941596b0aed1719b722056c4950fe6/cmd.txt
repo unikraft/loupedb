@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a npb-dc -w npb-dc -d ./Dockerfile.npb-dc
