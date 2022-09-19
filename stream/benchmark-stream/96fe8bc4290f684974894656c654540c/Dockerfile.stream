@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+# Download and build stream
+RUN wget https://www.cs.virginia.edu/stream/FTP/Code/stream.c -O /root/stream.c
+RUN gcc /root/stream.c -o /root/stream
+
+# Copy test script
+COPY dockerfile_data/stream-test.sh /root/stream-test.sh
+RUN chmod a+x /root/stream-test.sh
+
+# Run command (without coverage)
+CMD /root/explore.py --output-csv -t /root/stream-test.sh \
+		     -b /root/stream \
+			 --test-sequential
