@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a cryptsetup -w cryptsetup-test -d ./Dockerfile.cryptsetup
