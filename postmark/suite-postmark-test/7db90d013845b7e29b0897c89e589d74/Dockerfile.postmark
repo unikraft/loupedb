@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y postmark
+
+RUN echo "run" > /root/pm-config
+RUN echo "quit" >> /root/pm-config
+
+COPY dockerfile_data/postmark-test.py /root/postmark-test.py
+RUN chmod a+x /root/postmark-test.py
+
+CMD /root/explore.py --output-csv \
+		     --test-sequential -t /root/postmark-test.py \
+		     -b /usr/bin/postmark -- /root/pm-config
