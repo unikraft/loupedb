@@ -1,0 +1,15 @@
+FROM loupe-base:latest
+
+RUN wget https://github.com/facebook/zstd/archive/refs/tags/v1.5.0.tar.gz -O /root/zstd.tar.gz
+RUN tar xf /root/zstd.tar.gz
+RUN cd /root/zstd-1.5.0 && make -j
+
+RUN mkdir /root/zstd-test
+RUN cd /root && gunzip zstd.tar.gz && mv /root/zstd.tar /root/zstd-test
+
+COPY dockerfile_data/zstd-test.sh /root/zstd-test.sh
+RUN chmod a+x /root/zstd-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 10 --test-sequential -t /root/zstd-test.sh \
+		     -b /root/zstd-1.5.0/zstd -- /root/zstd-test/zstd.tar
