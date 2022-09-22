@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN wget http://www.phoronix-test-suite.com/benchmark-files/lzma-4.32.7.tar.gz -O /root/lzma.tar.gz
+RUN tar xf /root/lzma.tar.gz
+RUN cd /root/lzma-4.32.7 && ./configure --prefix=$PWD/prefix && make install -j
+RUN mkdir /root/lzma-test
+RUN cd /root && gunzip lzma.tar.gz && mv /root/lzma.tar /root/lzma-test
+
+COPY dockerfile_data/lzma-test.sh /root/lzma-test.sh
+RUN chmod a+x /root/lzma-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 10 --test-sequential -t /root/lzma-test.sh \
+		     -b /root/lzma-4.32.7/prefix/bin/lzma -- -q -f -c /root/lzma-test/lzma.tar
