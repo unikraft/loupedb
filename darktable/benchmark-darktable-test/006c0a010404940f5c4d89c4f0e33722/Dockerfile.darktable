@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y darktable
+
+RUN wget http://www.phoronix-test-suite.com/benchmark-files/darktable-bench-assets-1.tar.bz2 -O /root/assets.tar.bz2
+RUN tar xf /root/assets.tar.bz2
+RUN wget http://www.phoronix-test-suite.com/benchmark-files/server-rack.tar.xz -O /root/server-rack.tar.xz
+RUN tar xf /root/server-rack.tar.xz
+
+COPY dockerfile_data/darktable-test.py /root/darktable-test.py
+RUN chmod a+x /root/darktable-test.py
+
+CMD OMP_NUM_THREADS=2 /root/explore.py --output-csv \
+		     --timeout 120 --test-sequential -t /root/darktable-test.py \
+		     -b /usr/bin/darktable-cli -- /root/bench.SRW /root/output.jpg --core -d perf --disable-opencl
