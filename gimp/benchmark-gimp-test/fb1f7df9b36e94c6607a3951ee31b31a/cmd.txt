@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a gimp -w gimp-test -d ./Dockerfile.gimp

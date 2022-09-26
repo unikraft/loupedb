@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y gimp
+
+COPY dockerfile_data/gimp-test.sh /root/gimp-test.sh
+RUN chmod a+x /root/gimp-test.sh
+
+RUN wget http://www.phoronix-test-suite.com/benchmark-files/pts-sample-photos-2.tar.bz2 -O /root/photos.tar.bz2
+RUN tar xf /root/photos.tar.bz2
+
+COPY dockerfile_data/gimp-scripts.scm /root/.config/GIMP/2.10/scripts/gimp-scripts.scm
+
+CMD /root/explore.py --output-csv \
+		     --timeout 30 --test-sequential -t /root/gimp-test.sh \
+		     -b /usr/bin/gimp -- -i -b '(batch-resize-image "/root/DSC_6782.png" 600 400)' -b '(gimp-quit 0)'
