@@ -1,0 +1,15 @@
+--- gnuradio_benchmark.py       2021-03-10 18:23:08.000000000 +0000
++++ gnuradio_benchmark_new.py   2022-09-27 17:02:24.079713876 +0100
+@@ -16,10 +16,10 @@
+ # Benchmark parameters
+ 
+ # Duration of each benchmark trial
+-BENCH_TRIAL_DURATION    = 20.0
++BENCH_TRIAL_DURATION    = 3.0
+ 
+ # Number of benchmark trials to average
+-BENCH_NUM_TRIALS        = 3
++BENCH_NUM_TRIALS        = 1
+ 
+ # Benchmark Suite
+ BenchmarkSuite = []
