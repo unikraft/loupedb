@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a gmic -w gmic-test -d ./Dockerfile.gmic
