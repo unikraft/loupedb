@@ -1,0 +1,18 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libnpth0-dev
+
+RUN wget https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.3.7.tar.bz2 -O /root/gnupg.tar.bz2
+RUN tar xf /root/gnupg.tar.bz2
+RUN bzip2 -d /root/gnupg.tar.bz2
+RUN cd /root/gnupg-2.3.7 && ./configure --prefix=$PWD/prefix && make -j install
+RUN echo "foo" > /root/passphrase
+RUN mkdir /root/.gnupg
+
+COPY dockerfile_data/gnupg-test.sh /root/gnupg-test.sh
+RUN chmod a+x /root/gnupg-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 10 --test-sequential -t /root/gnupg-test.sh \
+		     -b /root/gnupg-2.3.7/prefix/bin/gpg -- -c --no-option --batch --passphrase-file /root/passphrase -o /dev/null /root/gnupg.tar
