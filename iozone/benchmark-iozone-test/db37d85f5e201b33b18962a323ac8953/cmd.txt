@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a iozone -w iozone-test -d ./Dockerfile.iozone
