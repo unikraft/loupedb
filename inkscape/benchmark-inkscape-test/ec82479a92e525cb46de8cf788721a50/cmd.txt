@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a inkscape -w inkscape-test -d ./Dockerfile.inkscape
