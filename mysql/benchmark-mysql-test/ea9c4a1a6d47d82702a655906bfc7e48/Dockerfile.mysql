@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+# Make sure to limit the number of replicas, for some reasons the static
+# analyzer takes 20+ GB of ram on this program
+
+RUN apt update
+RUN apt install -y mysql-server sysbench
+
+COPY dockerfile_data/mysql-test.sh /root/mysql-test.sh
+COPY dockerfile_data/mysql-script /root/mysql-script
+RUN chmod a+x /root/mysql-test.sh
+
+RUN service mysql start && sleep 1 && mysql -u root < /root/mysql-script
+
+CMD /root/explore.py --output-csv \
+		     --timeout 60 -t /root/mysql-test.sh -b /usr/sbin/mysqld --

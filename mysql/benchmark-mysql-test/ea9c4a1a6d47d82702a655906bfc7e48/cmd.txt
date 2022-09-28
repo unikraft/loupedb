@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a mysql -w mysql-test -d ./Dockerfile.mysql
