@@ -1,0 +1,9 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y aircrack-ng
+COPY dockerfile_data/null-test.sh /root/null-test.sh
+RUN chmod a+x /root/null-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 5 --test-sequential -t /root/null-test.sh \
+		     -b /usr/bin/aircrack-ng -- -S -Z 5
