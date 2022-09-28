@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a rawtherapee -w rawtherapee-test -d ./Dockerfile.rawtherapee
