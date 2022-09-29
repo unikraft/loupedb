@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y openmpi-bin
+
+RUN wget http://www.phoronix-test-suite.com/benchmark-files/AMG-20200304.tar.xz
+RUN tar xf /root/AMG-20200304.tar.xz
+
+COPY dockerfile_data/null-test.sh /root/null-test.sh
+RUN chmod a+x /root/null-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 30 --test-sequential -t /root/null-test.sh \
+		     -b /usr/bin/mpirun -- --allow-run-as-root -np 1 /root/AMG/test/amg -n 96 96 96
