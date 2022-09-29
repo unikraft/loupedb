@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre
+
+RUN git clone https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN cd /root/osv-apps/apache-derby && make
+
+RUN echo "connect 'jdbc:derby://localhost:1527/MyDbTest;create=true';\nexit;" > /root/ij-cmds
+
+COPY dockerfile_data/derby-test.sh /root/derby-test.sh
+RUN chmod a+x /root/derby-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 20 -t /root/derby-test.sh \
+		     -b /usr/bin/java -- -cp /root/osv-apps/apache-derby/ROOTFS/db-derby/lib/derby.jar:/root/osv-apps/apache-derby/ROOTFS/db-derby/lib/derbynet.jar:/root/osv-apps/apache-derby/ROOTFS/db-derby/lib/derbytools.jar:/root/osv-apps/apache-derby/ROOTFS/db-derby/lib/derbyclient.jar -Djava.security.policy=/root/osv-apps/apache-derby/ROOTFS/db-derby/security.policy org.apache.derby.drda.NetworkServerControl start -noSecurityManager
