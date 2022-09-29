@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre
+
+RUN git clone https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN cd /root/osv-apps/apache-activemq && make
+
+COPY dockerfile_data/activemq-test.sh /root/activemq-test.sh
+RUN chmod a+x /root/activemq-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 20 -t /root/activemq-test.sh \
+		     -b /usr/bin/java -- -Xms1G -Xmx1G -Djava.util.logging.config.file=/root/osv-apps/apache-activemq/ROOTFS/activemq/conf/logging.properties -Djava.security.auth.login.config=/root/osv-apps/apache-activemq/ROOTFS/activemq/conf/login.config -Dcom.sun.management.jmxremote -Djava.awt.headless=true -Djava.io.tmpdir=/root/osv-apps/apache-activemq/ROOTFS/activemq/tmp -Dactivemq.classpath=/root/osv-apps/apache-activemq/ROOTFS/activemq/conf -Dactivemq.home=/root/osv-apps/apache-activemq/ROOTFS/activemq -Dactivemq.base=/root/osv-apps/apache-activemq/ROOTFS/activemq -Dactivemq.conf=/root/osv-apps/apache-activemq/ROOTFS/activemq/conf -Dactivemq.data=/root/osv-apps/apache-activemq/ROOTFS/activemq/data -jar /root/osv-apps/apache-activemq/ROOTFS/activemq/bin/activemq.jar start
