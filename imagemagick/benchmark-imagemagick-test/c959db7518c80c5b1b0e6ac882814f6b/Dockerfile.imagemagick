@@ -1,0 +1,18 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y autoconf libjpeg-dev libpng-dev imagemagick
+
+RUN git clone https://github.com/ImageMagick/ImageMagick.git /root/ImageMagick
+# Checkout version at the date the corresponding folder was added to osv-apps:
+RUN cd /root/ImageMagick && git checkout 7.1.0-49
+RUN cd /root/ImageMagick && ./configure --prefix=$PWD/prefix && make -j install
+
+RUN wget https://upload.wikimedia.org/wikipedia/commons/a/a8/Dunnottar_Castle_2.jpg -O /root/castle.jpg
+
+COPY dockerfile_data/null-test.sh /root/null-test.sh
+RUN chmod a+x /root/null-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 10 --test-sequential -t /root/null-test.sh \
+		     -b /root/ImageMagick/prefix/bin/magick -- /root/castle.jpg /root/castle.png
