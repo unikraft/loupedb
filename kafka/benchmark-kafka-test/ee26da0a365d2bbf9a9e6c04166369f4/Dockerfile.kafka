@@ -1,0 +1,17 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre
+
+RUN git clone https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN cd /root/osv-apps/apache-kafka && make
+
+RUN echo "#!/bin/bash\n\n/usr/bin/java -Xmx512M -Xms512M -server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dkafka.logs.dir=/root/osv-apps/apache-kafka/ROOTFS/kafka/logs -Dlog4j.configuration=file:/root/osv-apps/apache-kafka/ROOTFS/kafka/config/log4j.properties -cp :/root/osv-apps/apache-kafka/ROOTFS/kafka/libs/* org.apache.zookeeper.server.quorum.QuorumPeerMain /root/osv-apps/apache-kafka/ROOTFS/kafka/config/zookeeper.properties &> /tmp/zookeeper.log\n" > /root/launch-zookeeper.sh
+RUN chmod +x /root/launch-zookeeper.sh
+
+COPY dockerfile_data/kafka-test.sh /root/kafka-test.sh
+RUN chmod a+x /root/kafka-test.sh
+
+CMD /root/launch-zookeeper.sh & sleep 2 && /root/explore.py --output-csv \
+		     --timeout 30 -t /root/kafka-test.sh \
+		     -b /usr/bin/java -- -Xmx1G -Xms1G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dkafka.logs.dir=/root/osv-apps/apache-kafka/ROOTFS/kafka/logs -Dlog4j.configuration=file:/root/osv-apps/apache-kafka/ROOTFS/kafka/config/log4j.properties -cp :/root/osv-apps/apache-kafka/ROOTFS/kafka/libs/* kafka.Kafka /root/osv-apps/apache-kafka/ROOTFS/kafka/config/server.properties
