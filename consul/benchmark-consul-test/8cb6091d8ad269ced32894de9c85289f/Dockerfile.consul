@@ -1,0 +1,23 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y jq
+
+RUN wget https://releases.hashicorp.com/consul/1.13.2/consul_1.13.2_linux_amd64.zip -O /root/consul.zip
+RUN unzip /root/consul.zip
+RUN mkdir /root/bin && mv /root/consul /root/bin/consul
+ENV PATH="${PATH}:/root/bin"
+
+RUN cd /root && git clone https://github.com/hashicorp-education/learn-consul-get-started-vms.git
+RUN cd /root/learn-consul-get-started-vms/scripts && ./generate_consul_server_config.sh
+
+RUN /root/bin/consul agent -node=consul -config-dir=/etc/consul/config/ & sleep 2 && consul acl bootstrap --format json > /root/consul-token-bootstrap.json
+
+RUN sed -i "s/enabled = true/enabled = false/" /etc/consul/config/agent-server-acl.hcl
+
+COPY dockerfile_data/consul-test.sh /root/consul-test.sh
+RUN chmod a+x /root/consul-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 30 -t /root/consul-test.sh \
+		     -b /root/bin/consul -- agent -node=consul -config-dir=/etc/consul/config/
