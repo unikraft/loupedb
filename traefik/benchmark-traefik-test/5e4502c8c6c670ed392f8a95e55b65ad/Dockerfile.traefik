@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y wrk
+
+RUN wget https://github.com/traefik/traefik/releases/download/v2.9.1/traefik_v2.9.1_linux_amd64.tar.gz -O /root/traefik.tar.gz
+RUN tar xf /root/traefik.tar.gz
+
+COPY dockerfile_data/traefik-test.sh /root/traefik-test.sh
+RUN chmod a+x /root/traefik-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 20 -t /root/traefik-test.sh \
+		     -b /root/traefik --
