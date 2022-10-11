@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y nodejs npm
+RUN npm i --save benchmark
+
+COPY dockerfile_data/nodejs-bench.js /root/nodejs-bench.js
+COPY dockerfile_data/nodejs-test.sh /root/nodejs-test.sh
+RUN chmod a+x /root/nodejs-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 30 -t /root/nodejs-test.sh \
+			 --test-sequential \
+		     -b /usr/bin/node -- /root/nodejs-bench.js
