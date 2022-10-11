@@ -1,0 +1,18 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y debian-keyring debian-archive-keyring apt-transport-https curl lsb-release wrk
+RUN curl -sL 'https://deb.dl.getenvoy.io/public/gpg.8115BA8E629CC074.key' | gpg --dearmor -o /usr/share/keyrings/getenvoy-keyring.gpg
+RUN echo a077cb587a1b622e03aa4bf2f3689de14658a9497a9af2c427bba5f4cc3c4723 /usr/share/keyrings/getenvoy-keyring.gpg | sha256sum --check
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/getenvoy-keyring.gpg] https://deb.dl.getenvoy.io/public/deb/debian bullseye main" | tee /etc/apt/sources.list.d/getenvoy.list
+RUN apt update
+RUN apt install -y getenvoy-envoy  
+
+RUN wget https://www.envoyproxy.io/docs/envoy/v1.18.4/_downloads/92dcb9714fb6bc288d042029b34c0de4/envoy-demo.yaml -O /root/envoy-demo.yaml
+
+COPY dockerfile_data/envoy-test.sh /root/envoy-test.sh
+RUN chmod a+x /root/envoy-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 20 -t /root/envoy-test.sh \
+		     -b /usr/bin/envoy -- -c /root/envoy-demo.yaml
