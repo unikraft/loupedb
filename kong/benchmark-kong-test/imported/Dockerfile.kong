@@ -1,0 +1,22 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y curl lsb-release wrk
+
+RUN cd /root && curl -Lo kong-enterprise-edition-3.0.0.0.all.deb "https://download.konghq.com/gateway-3.x-ubuntu-focal/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_3.0.0.0_amd64.deb"
+RUN cd /root && dpkg -i kong-enterprise-edition-3.0.0.0.all.deb
+
+RUN cd /root && kong config init
+
+RUN sed -i "s/\#database = postgres/database = off/" /etc/kong/kong.conf.default
+RUN sed -i "s/\#declarative_config = /declarative_config = \/root\/kong.yml/" /etc/kong/kong.conf.default
+RUN sed -r -i "/^worker_processes\s+1;$/a daemon off;" /usr/local/openresty/nginx/conf/nginx.conf
+
+RUN /usr/local/bin/kong prepare
+
+COPY dockerfile_data/kong-test.sh /root/kong-test.sh
+RUN chmod a+x /root/kong-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 25 -t /root/kong-test.sh \
+		     -b /usr/local/openresty/nginx/sbin/nginx  -- -c /usr/local/openresty/nginx/conf/nginx.conf
