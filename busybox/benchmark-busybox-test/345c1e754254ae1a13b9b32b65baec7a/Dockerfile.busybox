@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN git clone --depth 1 --branch 1_35_0 https://github.com/mirror/busybox.git /root/busybox
+
+RUN cd /root/busybox && make defconfig && make -j
+
+COPY dockerfile_data/null-test.sh /root/null-test.sh
+COPY dockerfile_data/busybox-test.sh /root/busybox-test.sh
+RUN chmod a+x /root/null-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 10 -t /root/null-test.sh \
+			 --test-sequential \
+		     -b /root/busybox/busybox -- ash /root/busybox-test.sh
