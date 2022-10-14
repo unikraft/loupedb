@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre
+
+RUN git clone https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN cd /root/osv-apps/cassandra && make
+
+COPY dockerfile_data/cassandra-test.sh /root/cassandra-test.sh
+RUN chmod a+x /root/cassandra-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 120 -t /root/cassandra-test.sh \
+		     -b /usr/bin/java -- -cp .:/root/osv-apps/cassandra/ROOTFS/usr/cassandra/conf/:/root/osv-apps/cassandra/ROOTFS/usr/cassandra/lib/* -javaagent:/root/osv-apps/cassandra/ROOTFS/usr/cassandra/lib/jamm-0.2.6.jar -XX:+CMSClassUnloadingEnabled -XX:+UseThreadPriorities -Xms1918M -Xmx1918M -Xmn479M -XX:+HeapDumpOnOutOfMemoryError -Xss256k -XX:StringTableSize=1000003 -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:SurvivorRatio=8 -XX:MaxTenuringThreshold=1 -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseTLAB -XX:+UseCondCardMark -Djava.rmi.server.hostname=$OSV_IP -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=7199 -Dcom.sun.management.jmxremote.rmi.port=7199 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dlogback.configurationFile=logback.xml -Dcassandra.logdir=/root/osv-apps/cassandra/ROOTFS/usr/cassandra/logs -Dcassandra.storagedir=/root/osv-apps/cassandra/ROOTFS/usr/cassandra/data -Dcassandra-foreground=yes org.apache.cassandra.service.CassandraDaemon
