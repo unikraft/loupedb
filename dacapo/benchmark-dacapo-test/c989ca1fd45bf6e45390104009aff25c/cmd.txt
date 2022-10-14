@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a dacapo -w dacapo-test -d ./Dockerfile.dacapo

@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre
+
+RUN wget "https://sourceforge.net/projects/dacapobench/files/9.12-bach-MR1/dacapo-9.12-MR1-bach.jar/download" -O /root/dacapo.jar
+
+COPY dockerfile_data/null-test.sh /root/null-test.sh
+RUN chmod a+x /root/null-test.sh
+
+CMD /root/explore.py --output-csv \
+		     --timeout 100 -t /root/null-test.sh --test-sequential \
+		     -b /usr/bin/java -- -jar dacapo.jar -t 1 avrora
