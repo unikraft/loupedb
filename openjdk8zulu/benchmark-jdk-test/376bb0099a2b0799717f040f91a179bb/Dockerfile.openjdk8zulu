@@ -1,0 +1,9 @@
+FROM loupe-base:latest
+
+COPY dockerfile_data/openjdk.deb /root/openjdk.deb
+RUN apt install -y /root/openjdk.deb
+
+COPY dockerfile_data/jdk-test.sh /root/jdk-test.sh
+RUN chmod a+x /root/jdk-test.sh
+
+CMD cd /root && ./explore.py --output-csv --test-sequential -t /root/jdk-test.sh -b /usr/bin/java -- -version
