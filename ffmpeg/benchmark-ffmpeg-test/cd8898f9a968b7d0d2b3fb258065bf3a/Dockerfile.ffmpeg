@@ -1,0 +1,10 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y ffmpeg
+
+COPY dockerfile_data/ffmpeg-test.sh /root/ffmpeg-test.sh
+RUN chmod a+x /root/ffmpeg-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/ffmpeg-test.sh \
+		    -b /usr/bin/ffmpeg -- -formats
