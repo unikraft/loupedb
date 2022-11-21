@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a rpm -w rpm-test -d ./Dockerfile.rpm

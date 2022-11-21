@@ -1,0 +1,10 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt -y install rpm
+
+# Copy test script
+COPY dockerfile_data/rpm-test.sh /root/rpm-test.sh
+RUN chmod a+x /root/rpm-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/rpm-test.sh -b /usr/bin/rpm -- -afgplsiv?
