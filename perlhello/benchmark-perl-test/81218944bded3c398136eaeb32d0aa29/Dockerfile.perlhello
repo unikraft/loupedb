@@ -1,0 +1,11 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y perl
+
+COPY dockerfile_data/perl-test.sh /root/perl-test.sh
+COPY dockerfile_data/hello.pl /root/hello.pl
+RUN chmod a+x /root/perl-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/perl-test.sh \
+		    -b /usr/bin/perl -- /root/hello.pl
