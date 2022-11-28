@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+RUN apt update
+COPY dockerfile_data/tzdata.deb /root/tzdata.deb
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/London
+RUN apt -y install /root/tzdata.deb 
+ARG DEBIAN_FRONTEND=interactive
+RUN DEBIAN_FRONTEND=interactive
+RUN apt install -y groonga
+
+# Copy test script
+COPY dockerfile_data/groonga-test.sh /root/groonga-test.sh
+RUN chmod a+x /root/groonga-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/groonga-test.sh -b /usr/bin/groonga -- --version

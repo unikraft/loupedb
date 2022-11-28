@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a groonga -w groonga-test -d ./Dockerfile.groonga
