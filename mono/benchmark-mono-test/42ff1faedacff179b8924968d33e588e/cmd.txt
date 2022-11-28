@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a mono -w mono-test -d ./Dockerfile.mono
