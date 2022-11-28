@@ -1,0 +1,10 @@
+FROM loupe-base:latest
+
+RUN apt update && apt -y upgrade
+RUN apt install -y netperf
+
+COPY dockerfile_data/netperf-test.sh /root/netperf-test.sh
+RUN chmod a+x /root/netperf-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/netperf-test.sh \
+		    -b /usr/bin/netperf -- -V

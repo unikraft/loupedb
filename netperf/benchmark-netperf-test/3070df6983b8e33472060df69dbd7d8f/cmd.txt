@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a netperf -w netperf-test -d ./Dockerfile.netperf
