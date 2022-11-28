@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a gccgo -w gccgo-test -d ./Dockerfile.gccgo

@@ -1,0 +1,11 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y gccgo
+
+COPY dockerfile_data/gccgo-test.sh /root/gccgo-test.sh
+COPY dockerfile_data/hello.go /root/hello.go
+RUN chmod a+x /root/gccgo-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/gccgo-test.sh \
+		    -b /usr/bin/gccgo -- /root/hello.go
