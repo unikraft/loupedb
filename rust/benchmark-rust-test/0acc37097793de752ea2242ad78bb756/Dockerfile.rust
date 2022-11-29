@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt -y upgrade
+RUN apt install -y curl
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/rust-test.sh /root/rust-test.sh
+COPY dockerfile_data/hello.rs /root/hello.rs
+RUN chmod a+x /root/rust-test.sh
+RUN bash -c 'source "$HOME/.cargo/env"'
+
+CMD /root/explore.py --output-csv --test-sequential -t /root/rust-test.sh -b /root/.cargo/bin/rustc -- /root/hello.rs

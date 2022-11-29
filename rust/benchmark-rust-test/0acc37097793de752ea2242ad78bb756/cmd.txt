@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a rust -w rust-test -d ./Dockerfile.rust
