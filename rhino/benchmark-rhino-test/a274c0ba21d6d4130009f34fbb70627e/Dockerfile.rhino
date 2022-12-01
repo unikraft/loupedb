@@ -1,0 +1,12 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt install -y rhino
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/rhino-test.sh /root/rhino-test.sh
+COPY dockerfile_data/hello.js /root/hello.js
+RUN chmod a+x /root/rhino-test.sh
+
+CMD /root/explore.py --timeout 10 --output-csv --test-sequential --disable-static -t /root/rhino-test.sh -b /usr/bin/rhino -- /root/hello.js

@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a rhino -w rhino-test -d ./Dockerfile.rhino
