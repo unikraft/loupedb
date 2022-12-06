@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y wrk curl
+RUN curl -fsSL https://deno.land/x/install/install.sh | sh
+RUN bash -c 'export DENO_INSTALL="/root/.deno"' && bash -c 'export PATH="$DENO_INSTALL/bin:$PATH"'
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/deno-test.sh /root/deno-test.sh
+COPY dockerfile_data/hello.ts /root/hello.ts
+RUN chmod a+x /root/deno-test.sh
+
+CMD /root/explore.py --output-csv --disable-static -t /root/deno-test.sh -b /root/.deno/bin/deno -- run hello.ts
