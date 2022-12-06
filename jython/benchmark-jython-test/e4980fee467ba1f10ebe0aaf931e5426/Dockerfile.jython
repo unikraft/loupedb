@@ -1,0 +1,12 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt -y upgrade
+RUN apt install -y jython
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/jython-test.sh /root/jython-test.sh
+COPY dockerfile_data/hello.py /root/hello.py
+RUN chmod a+x /root/jython-test.sh
+
+CMD /root/explore.py --output-csv  --test-sequential --disable-static -t /root/jython-test.sh -b /usr/bin/jython -- hello.py
