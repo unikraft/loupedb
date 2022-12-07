@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a uperf -w uperf-test -d ./Dockerfile.uperf
