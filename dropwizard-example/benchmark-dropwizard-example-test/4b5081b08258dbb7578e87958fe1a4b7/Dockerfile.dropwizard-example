@@ -1,0 +1,15 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y openjdk-11-jre openjdk-11-jdk maven wrk
+
+RUN git clone --depth 1 --branch v2.1.4 https://github.com/dropwizard/dropwizard.git /root/dropwizard
+RUN cd /root/dropwizard && mvn package -DskipTests=true
+RUN cd /root && java -jar /root/dropwizard/dropwizard-example/target/dropwizard-example-2.1.4.jar db migrate /root/dropwizard/dropwizard-example/example.yml
+RUN cp /root/dropwizard/dropwizard-example/example.keystore /root
+
+COPY dockerfile_data/dropwizard-example-test.sh /root/dropwizard-example-test.sh
+RUN chmod +x /root/dropwizard-example-test.sh
+
+CMD /root/explore.py --output-csv \
+                     --timeout 15 -t /root/dropwizard-example-test.sh \
+                     -b /usr/bin/java -- -jar /root/dropwizard/dropwizard-example/target/dropwizard-example-2.1.4.jar server /root/dropwizard/dropwizard-example/example.yml
