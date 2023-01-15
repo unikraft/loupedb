@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+# Install rust
+RUN apt update && apt install -y openjdk-8-jre
+
+# Embulk
+RUN wget https://dl.embulk.org/embulk-latest.jar -O /root/embulk.jar
+RUN cd /root && java -jar embulk.jar example ./try1
+RUN cd /root && java -jar ./embulk.jar guess ./try1/seed.yml -o config.yml
+
+COPY dockerfile_data/generic-test.sh /root/generic-test.sh
+RUN chmod +x /root/generic-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential \
+                     --timeout 15 -t /root/generic-test.sh \
+                     -b /usr/bin/java -- -jar /root/embulk.jar run /root/config.yml
