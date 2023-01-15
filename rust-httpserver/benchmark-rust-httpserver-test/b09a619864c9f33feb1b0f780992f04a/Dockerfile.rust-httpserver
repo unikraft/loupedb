@@ -1,0 +1,16 @@
+FROM loupe-base:latest
+
+# Install rust
+RUN apt update && apt install -y curl wrk
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# osv-apps rust-httpserver comes from hyper
+RUN git clone --depth=1 https://github.com/hyperium/hyper.git /root/hyper
+RUN . "/root/.cargo/env" && cd /root/hyper && cargo build --features=full --example=hello
+
+COPY dockerfile_data/rust-httpserver-test.sh /root/rust-httpserver-test.sh
+RUN chmod +x /root/rust-httpserver-test.sh
+
+CMD /root/explore.py --output-csv \
+                     --timeout 10 -t /root/rust-httpserver-test.sh \
+                     -b /root/hyper/target/debug/examples/hello --
