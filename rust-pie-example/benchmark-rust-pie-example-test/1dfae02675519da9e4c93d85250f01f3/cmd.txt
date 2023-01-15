@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a rust-pie-example -w rust-pie-example-test -d ./Dockerfile.rust-pie-example

@@ -1,0 +1,17 @@
+FROM loupe-base:latest
+
+# Install rust
+RUN apt update && apt install -y curl wrk
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# osv-apps
+RUN git clone --depth=1 https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN . /root/.cargo/env && cd /root/osv-apps/rust-pie-example && make
+
+COPY dockerfile_data/rust-pie-example-test.sh /root/rust-pie-example-test.sh
+RUN chmod +x /root/rust-pie-example-test.sh
+
+CMD /root/explore.py --output-csv \
+                     --timeout 10 -t /root/rust-pie-example-test.sh \
+                     --test-sequential \
+                     -b /root/osv-apps/rust-pie-example/target/release/hello --
