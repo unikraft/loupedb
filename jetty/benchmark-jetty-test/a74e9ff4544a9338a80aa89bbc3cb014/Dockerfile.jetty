@@ -1,0 +1,11 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt -y install jetty9 wrk
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/jetty-test.sh /root/jetty-test.sh
+RUN chmod a+x /root/jetty-test.sh
+
+CMD /root/explore.py --output-csv -t /root/jetty-test.sh --disable-static -b /usr/bin/java -- -Djetty.base=/usr/share/jetty9 -jar /usr/share/jetty9/start.jar

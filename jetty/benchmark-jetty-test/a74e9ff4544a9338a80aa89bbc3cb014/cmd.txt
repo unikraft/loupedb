@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a jetty -w jetty-test -d ./Dockerfile.jetty
