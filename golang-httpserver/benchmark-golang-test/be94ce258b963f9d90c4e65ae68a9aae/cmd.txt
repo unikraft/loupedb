@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a golang-httpserver -w golang-test -d ./Dockerfile.golang-httpserver

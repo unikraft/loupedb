@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt -y install openjdk-19-jdk-headless wrk
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/java-test.sh /root/java-test.sh
+COPY dockerfile_data/HttpServerApp.java /root/HttpServerApp.java
+RUN chmod a+x /root/java-test.sh
+RUN javac /root/HttpServerApp.java
+
+CMD /root/explore.py --output-csv -t /root/java-test.sh --disable-static -b /usr/bin/java -- HttpServerApp

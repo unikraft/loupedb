@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a golang-pie-example -w golang-test -d ./Dockerfile.golang-pie-example
