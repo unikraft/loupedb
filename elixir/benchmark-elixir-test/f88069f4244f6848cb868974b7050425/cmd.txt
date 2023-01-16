@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb -a elixir -w elixir-test -d ./Dockerfile.elixir
