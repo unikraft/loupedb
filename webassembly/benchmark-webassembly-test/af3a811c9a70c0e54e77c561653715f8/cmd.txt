@@ -1,0 +1,1 @@
+./loupe -v generate -b -db ../loupedb-osv -a webassembly -w webassembly-test -d ./Dockerfile.webassembly

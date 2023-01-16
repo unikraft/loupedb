@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+
+RUN wget https://github.com/wasmerio/wasmer/releases/download/0.11.0/wasmer-linux-amd64.tar.gz -O /root/wasm.tar.gz
+RUN cd /root && tar xf wasm.tar.gz
+RUN wget https://github.com/wasmerio/wasmer/raw/0.11.0/examples/lua.wasm -O /root/lua.wasm
+
+COPY dockerfile_data/hello.lua /root/hello.lua
+COPY dockerfile_data/webassembly-test.sh /root/webassembly-test.sh
+RUN chmod +x /root/webassembly-test.sh
+
+CMD /root/explore.py --output-csv --test-sequential \
+                     --timeout 10 -t /root/webassembly-test.sh \
+                     -b /root/bin/wasmer -- run /root/lua.wasm /root/hello.lua
