@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y wrk
+
+RUN wget https://github.com/twitter/twemproxy/releases/download/0.5.0/twemproxy-0.5.0.tar.gz -O /root/proxy.tar.gz
+RUN cd /root && tar xf proxy.tar.gz
+RUN cd /root/twemproxy-0.5.0 && ./configure --prefix=$PWD/prefix && make install -j
+
+COPY dockerfile_data/twmemproxy-test.sh /root/twmemproxy-test.sh
+RUN chmod +x /root/twmemproxy-test.sh
+
+CMD cd /root/twemproxy-0.5.0/ && /root/explore.py --output-csv \
+                     --timeout 15 -t /root/twmemproxy-test.sh \
+                     -b /root/twemproxy-0.5.0/prefix/sbin/nutcracker --
