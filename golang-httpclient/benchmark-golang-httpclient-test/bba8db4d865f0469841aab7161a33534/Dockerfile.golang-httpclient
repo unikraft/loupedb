@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y golang
+
+RUN git clone --depth 1 https://github.com/cloudius-systems/osv-apps.git /root/osv-apps
+RUN cd /root/osv-apps/golang-httpclient && make
+
+COPY dockerfile_data/golang-httpclient-test.sh /root/golang-httpclient-test.sh
+RUN chmod +x /root/golang-httpclient-test.sh
+
+CMD /root/explore.py --output-csv \
+                     --timeout 10 -t /root/golang-httpclient-test.sh \
+                     -b ~/osv-apps/golang-httpclient/httpclient -- https://www.google.com
