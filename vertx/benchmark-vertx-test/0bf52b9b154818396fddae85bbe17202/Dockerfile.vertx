@@ -1,0 +1,13 @@
+FROM loupe-base:latest
+
+RUN apt update && apt install -y openjdk-8-jre openjdk-8-jdk maven wrk
+
+RUN git clone --depth 1 https://github.com/vert-x3/vertx-examples.git
+RUN cd /root/vertx-examples/maven-simplest && mvn package
+
+COPY dockerfile_data/vertx-test.sh /root/vertx-test.sh
+RUN chmod +x /root/vertx-test.sh
+
+CMD /root/explore.py --output-csv \
+                     --timeout 15 -t /root/vertx-test.sh \
+                     -b /usr/bin/java -- -jar /root/vertx-examples/maven-simplest/target/maven-simplest-4.3.1-fat.jar
