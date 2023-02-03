@@ -1,0 +1,14 @@
+FROM loupe-base:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update --fix-missing && apt -y upgrade
+RUN apt -y install openjdk-18-jdk-headless wrk
+RUN mkdir minecraft && cd minecraft && wget https://launcher.mojang.com/v1/objects/125e5adf40c659fd3bce3e66e67a16bb49ecc1b9/server.jar
+RUN java -Xms1024M -Xmx1024M -jar /root/minecraft/server.jar nogui
+ARG DEBIAN_FRONTEND=interactive
+
+COPY dockerfile_data/minecraft-test.sh /root/minecraft-test.sh
+COPY dockerfile_data/eula.txt /root/eula.txt
+RUN chmod a+x /root/minecraft-test.sh
+
+CMD /root/explore.py --output-csv -t /root/minecraft-test.sh --timeout 3600 --disable-static -b /usr/bin/java -- -Xms1024M -Xmx1024M -jar /root/minecraft/server.jar nogui
