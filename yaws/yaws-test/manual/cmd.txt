@@ -1,1 +1,0 @@
-./loupe -v generate -b -db ../loupedb-osv -a "yaws" -w "yaws-test" -d ./Dockerfile.yaws
