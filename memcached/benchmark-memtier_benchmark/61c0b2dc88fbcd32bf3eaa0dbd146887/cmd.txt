@@ -1,1 +1,0 @@
-../../../../loupe/loupe -v generate -b -db ../../../../loupedb -a memcached -w memtier_benchmark -d ./Dockerfile.memcached
