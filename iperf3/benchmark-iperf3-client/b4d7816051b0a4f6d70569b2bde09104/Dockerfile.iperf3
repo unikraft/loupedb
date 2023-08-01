@@ -1,0 +1,9 @@
+FROM loupe-base:latest
+
+RUN apt update
+RUN apt install -y iperf3
+
+COPY dockerfile_data/iperf3-test.sh /root/iperf3-test.sh
+RUN chmod a+x /root/iperf3-test.sh
+
+CMD /root/explore.py --output-csv -t /root/iperf3-test.sh -b /usr/bin/iperf3 -- -s

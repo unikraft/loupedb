@@ -1,0 +1,1 @@
+./loupe generate -b -db ../loupedb -a iperf3 -w iperf3-client -d ./Dockerfile.iperf3
