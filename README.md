@@ -7,6 +7,9 @@ The paper provides an analysis of this data set.
 
 ## Notes
 
+- Although you technically *can* browse this data set manually with a simple
+  text editor (all data is in CSV), we recommend you to use `loupe search`, as
+  described in the [main Loupe README](https://github.com/unikraft/loupe).
 - This repository also contains OS support descriptions for 11 OSes, all in the
   format `${OS_NAME}.syscalls`.
 - Some folders contain data in the format `imported`, e.g.,
