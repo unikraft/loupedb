@@ -12,6 +12,8 @@ The paper provides an analysis of this data set.
   described in the [main Loupe README](https://github.com/unikraft/loupe).
 - This repository also contains OS support descriptions for 11 OSes, all in the
   format `${OS_NAME}.syscalls`.
+- This repository also contains ASPLOS24-supp.pdf, which provides a list and
+  description of applications in our database, along with support plans for 11 OSes.
 - Some folders contain data in the format `imported`, e.g.,
   `flask/suite/imported/data`. This was manually imported from runs with Loupe
   that pre-date the database in its current format. Eventually we will re-run
